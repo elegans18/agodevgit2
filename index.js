@@ -43,7 +43,7 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     if(!socket.nickname) return;
     console.log(socket.nickname+' çıkış yaptı.');    
-    nicknames.pop(socket.nickname);
+    delete users[socket.nickname];
     io.sockets.emit('usernames',Object.keys(users));
   });
 });

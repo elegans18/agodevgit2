@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+
+    <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <title>Ag Programlama Odev 2</title>
+  </head>
+  <body>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+                $(function () {
+                  $('#mesj').hide();
+                  $('#messages').hide();
+
+                  var socket = io();
+                  var $nickForm =$('#setNick');
+                  var $nickBox =$('#nickname');
+                  var $users=$('#users');
+                  
+                  $nickForm.submit(function(e){
+                    e.preventDefault();
+                    socket.emit('new user',$nickBox.val(),function(data){
+                      if(data){
+                        $('#kullanicilar').hide();
+                        $('#mesj').show();
+                        $('#messages').show();
+                      }
+                    });
+                    $nickBox.val('');
+                  });
+
+                socket.on('usernames',function(data)
+                {
+                  var html='';
+                  for(i=0; i<data.length;i++){
+                    html+=data[i]+'<br/>'
+                  }
+                  $users.html(html);
+                });
+                  
+                  $('#mesj').submit(function(){
+                    socket.emit('chat message', $('#m').val());
+                    $('#m').val('');
+                    return false;
+                  });
+
+                  socket.on('chat message', function(msg){
+                    //$('#messages').append($('<li>').text(msg.mesaj,msg.nick));
+                      if(msg.nick!='undefined')
+                      {
+                        $('#messages').append('<li class="list-group-item"><b>' + msg.nick+ ':</b>' +msg.mesaj+"<br/></li>");
+                      }                                           
+                  });
+
+                  socket.on('whisper', function(data){
+                    //$('#messages').append($('<li>').text(msg.mesaj,msg.nick));
+                    $('#messages').append('<li class="list-group-item"><b>' + data.nick+ ':</b>' +data.mesaj+"<br/></li>");                                        
+                  });
+
+                });
+              </script>
+              <div id="users" class="alert alert-success col-md-4"></div>
+            
+              <div id="kullanicilar">
+                    <form id="setNick">
+                    <div class="input-group col-md-4">                      
+                        <input placeholder="Kullanıcı adı giriniz." class="form-control" id="nickname" autocomplete="off"></input>
+                        <div class="input-group-append">
+                        <button class="btn btn-primary">Onay</button>
+                        </div>                      
+                    </div>
+                  </form>
+              </div>
+    <ul class="list-group" id="messages"></ul>
+    <!--<form action="">
+      <input class="form-text col-md-4" id="m" autocomplete="off" ></input>
+      <button class="btn btn-primary">Send</button>
+    </form>-->
+    <form id="mesj" action="">
+      <div class="input-group col-md-4">      
+          <input type="text" id="m" class="form-control" aria-describedby="basic-addon2">
+          <div class="input-group-append">
+            <button class="btn btn-success">Gönder</button>
+          </div>      
+      </div>
+    </form>
+
+    <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+  crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+  crossorigin="anonymous"></script>
+  </body>
+</html>
